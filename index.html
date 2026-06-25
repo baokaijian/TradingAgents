@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>TradingAgents A/H 自动化交易平台</title>
+    <title>TradingAgents A/H 控制台</title>
     <meta
       name="description"
-      content="基于 TradingAgents 的 A 股与港股自动化交易工具平台入口页。"
+      content="基于 TradingAgents 的 A 股与港股自动化交易工具平台控制台。"
     />
     <style>
       :root {
@@ -17,10 +17,12 @@
         --line: #dfe6e2;
         --green: #0f7b57;
         --green-dark: #0a563e;
-        --blue: #205f95;
-        --amber: #ad7116;
         --soft: #e9f4ef;
-        --shadow: 0 18px 45px rgba(23, 32, 27, 0.1);
+        --blue: #245f8f;
+        --amber: #a56f18;
+        --red: #9a3e32;
+        --dark: #101714;
+        --shadow: 0 16px 40px rgba(23, 32, 27, 0.08);
       }
 
       * {
@@ -35,7 +37,7 @@
           Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
           "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
           sans-serif;
-        line-height: 1.6;
+        line-height: 1.55;
       }
 
       a {
@@ -43,23 +45,44 @@
         text-decoration: none;
       }
 
-      .shell {
-        max-width: 1160px;
-        margin: 0 auto;
-        padding: 0 24px;
+      code {
+        border: 1px solid #d8e4de;
+        background: #f2f7f4;
+        border-radius: 6px;
+        padding: 1px 5px;
+        font-family:
+          "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        font-size: 0.92em;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
       }
 
       header {
-        border-bottom: 1px solid var(--line);
-        background: rgba(246, 248, 247, 0.92);
         position: sticky;
         top: 0;
-        z-index: 10;
+        z-index: 20;
+        border-bottom: 1px solid var(--line);
+        background: rgba(246, 248, 247, 0.94);
         backdrop-filter: blur(14px);
       }
 
+      .shell {
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 0 22px;
+      }
+
       .nav {
-        min-height: 72px;
+        min-height: 70px;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -70,25 +93,34 @@
         display: flex;
         align-items: center;
         gap: 12px;
-        font-weight: 750;
-        letter-spacing: 0;
+        min-width: 240px;
       }
 
-      .mark {
-        width: 36px;
-        height: 36px;
+      .brand-mark {
+        width: 38px;
+        height: 38px;
         border-radius: 8px;
-        background: var(--green);
-        color: #fff;
         display: grid;
         place-items: center;
-        font-weight: 800;
+        color: white;
+        background: var(--green);
+        font-weight: 900;
+      }
+
+      .brand-title {
+        font-weight: 850;
+      }
+
+      .brand-subtitle {
+        color: var(--muted);
+        font-size: 12px;
       }
 
       .nav-links {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
-        gap: 20px;
+        gap: 14px;
         color: var(--muted);
         font-size: 14px;
       }
@@ -97,262 +129,399 @@
         color: var(--green-dark);
       }
 
-      main {
-        padding-bottom: 72px;
-      }
-
-      .hero {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(360px, 0.86fr);
-        gap: 42px;
-        align-items: center;
-        padding: 76px 0 56px;
-      }
-
-      .eyebrow {
+      .status-pill {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        padding: 7px 11px;
         border: 1px solid #c8ddd3;
         border-radius: 999px;
-        color: var(--green-dark);
+        padding: 7px 11px;
         background: var(--soft);
-        font-size: 13px;
-        font-weight: 650;
+        color: var(--green-dark);
+        font-weight: 750;
       }
 
-      h1 {
-        margin: 20px 0 18px;
-        max-width: 720px;
-        font-size: 52px;
-        line-height: 1.08;
-        letter-spacing: 0;
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--green);
       }
 
-      .lead {
-        max-width: 720px;
-        color: var(--muted);
-        font-size: 18px;
-        margin: 0 0 28px;
+      main {
+        padding: 22px 0 54px;
       }
 
-      .actions {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
+      .dashboard {
+        display: grid;
+        grid-template-columns: 360px minmax(0, 1fr);
+        gap: 18px;
       }
 
-      .button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 44px;
-        padding: 0 18px;
-        border-radius: 8px;
+      .panel {
+        background: var(--panel);
         border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+      }
+
+      .panel-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        border-bottom: 1px solid var(--line);
+        padding: 16px 18px;
+      }
+
+      .panel-title {
+        margin: 0;
+        font-size: 17px;
+        line-height: 1.25;
+      }
+
+      .panel-note {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .panel-body {
+        padding: 18px;
+      }
+
+      .control-stack {
+        display: grid;
+        gap: 14px;
+      }
+
+      .field {
+        display: grid;
+        gap: 7px;
+      }
+
+      .field label {
+        color: var(--muted);
+        font-size: 13px;
         font-weight: 700;
       }
 
-      .button.primary {
+      .field input,
+      .field select,
+      .field textarea {
+        width: 100%;
+        min-height: 40px;
+        border: 1px solid #cfdcd5;
+        border-radius: 8px;
+        background: #fff;
+        color: var(--ink);
+        padding: 9px 11px;
+        outline: none;
+      }
+
+      .field textarea {
+        min-height: 92px;
+        resize: vertical;
+      }
+
+      .field input:focus,
+      .field select:focus,
+      .field textarea:focus {
+        border-color: var(--green);
+        box-shadow: 0 0 0 3px rgba(15, 123, 87, 0.12);
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .button-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .btn {
+        min-height: 42px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        background: white;
+        color: var(--ink);
+        font-weight: 800;
+      }
+
+      .btn.primary {
+        background: var(--green);
+        border-color: var(--green);
+        color: white;
+      }
+
+      .btn.primary:hover {
+        background: var(--green-dark);
+      }
+
+      .btn.danger {
+        color: var(--red);
+        border-color: #ecc7c1;
+        background: #fff7f5;
+      }
+
+      .mode-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+
+      .mode-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: white;
+        padding: 13px;
+        min-height: 118px;
+      }
+
+      .mode-card.active {
+        border-color: var(--green);
+        background: var(--soft);
+      }
+
+      .mode-card strong {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .mode-card span {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .kpi {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: white;
+        padding: 14px;
+      }
+
+      .kpi-label {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .kpi-value {
+        margin-top: 6px;
+        font-size: 24px;
+        font-weight: 900;
+        color: var(--green-dark);
+      }
+
+      .workbench {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 360px;
+        gap: 18px;
+      }
+
+      .cards {
+        display: grid;
+        gap: 14px;
+      }
+
+      .result-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: white;
+        overflow: hidden;
+      }
+
+      .result-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 13px 15px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .result-head strong {
+        font-size: 15px;
+      }
+
+      .result-body {
+        padding: 15px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 24px;
+        border-radius: 999px;
+        padding: 3px 9px;
+        font-size: 12px;
+        font-weight: 850;
+      }
+
+      .badge.ok {
+        background: #e7f6ee;
+        color: var(--green-dark);
+      }
+
+      .badge.warn {
+        background: #fff4df;
+        color: var(--amber);
+      }
+
+      .badge.fail {
+        background: #fff0ee;
+        color: var(--red);
+      }
+
+      .badge.info {
+        background: #e8f1f8;
+        color: var(--blue);
+      }
+
+      .kv {
+        display: grid;
+        grid-template-columns: 140px minmax(0, 1fr);
+        gap: 8px 12px;
+        font-size: 14px;
+      }
+
+      .kv div:nth-child(odd) {
+        color: var(--muted);
+      }
+
+      .issue-list,
+      .event-log {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .issue-list li,
+      .event-log li {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fbfdfc;
+        padding: 10px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 620px;
+      }
+
+      th,
+      td {
+        border-bottom: 1px solid var(--line);
+        padding: 10px;
+        text-align: left;
+        vertical-align: top;
+        font-size: 13px;
+      }
+
+      th {
+        color: var(--muted);
+        background: #f7faf8;
+        font-weight: 800;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .ticket-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .mini-btn {
+        min-height: 30px;
+        padding: 0 10px;
+        border-radius: 7px;
+        border: 1px solid #cfdcd5;
+        background: white;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .mini-btn.primary {
         background: var(--green);
         color: white;
         border-color: var(--green);
       }
 
-      .button.primary:hover {
-        background: var(--green-dark);
+      .mini-btn.danger {
+        color: var(--red);
+        border-color: #ecc7c1;
       }
 
-      .button.secondary {
-        background: white;
-        color: var(--ink);
-      }
-
-      .button.secondary:hover {
-        border-color: #b7c8bf;
-      }
-
-      .terminal {
-        background: #101714;
-        color: #d9efe5;
+      .empty {
+        color: var(--muted);
+        border: 1px dashed #cfdcd5;
         border-radius: 8px;
-        box-shadow: var(--shadow);
-        overflow: hidden;
-        border: 1px solid #24352e;
-      }
-
-      .terminal-top {
-        height: 42px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 14px;
-        border-bottom: 1px solid #24352e;
-        color: #93ada1;
+        padding: 14px;
+        text-align: center;
         font-size: 13px;
       }
 
-      .dots {
-        display: flex;
-        gap: 7px;
-      }
-
-      .dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: #547064;
-      }
-
-      .terminal-body {
-        padding: 18px;
-        font-family:
-          "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-        font-size: 13px;
-      }
-
-      .row {
-        display: grid;
-        grid-template-columns: 92px 1fr 72px;
-        gap: 12px;
-        padding: 9px 0;
-        border-bottom: 1px solid rgba(217, 239, 229, 0.08);
-      }
-
-      .row:last-child {
-        border-bottom: 0;
-      }
-
-      .ok {
-        color: #6ee7ad;
-      }
-
-      .warn {
-        color: #f8c36a;
-      }
-
-      .section {
-        padding: 48px 0;
-      }
-
-      .section h2 {
-        margin: 0 0 14px;
-        font-size: 30px;
-        line-height: 1.2;
-        letter-spacing: 0;
-      }
-
-      .section-intro {
-        color: var(--muted);
-        max-width: 760px;
-        margin: 0 0 26px;
-      }
-
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 16px;
-      }
-
-      .card {
-        background: var(--panel);
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 20px;
-      }
-
-      .card h3 {
-        margin: 0 0 8px;
-        font-size: 18px;
-      }
-
-      .card p {
-        margin: 0;
-        color: var(--muted);
-      }
-
-      .pipeline {
-        display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
-        gap: 12px;
-      }
-
-      .step {
-        background: var(--panel);
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 16px;
-        min-height: 132px;
-      }
-
-      .step-number {
-        color: var(--green);
-        font-weight: 800;
-        margin-bottom: 8px;
-      }
-
-      .step strong {
-        display: block;
-        margin-bottom: 6px;
-      }
-
-      .step span {
-        color: var(--muted);
-        font-size: 14px;
-      }
-
-      .code {
-        background: #101714;
-        border-radius: 8px;
-        color: #d9efe5;
-        padding: 18px;
-        overflow-x: auto;
-        border: 1px solid #24352e;
-      }
-
-      pre {
-        margin: 0;
-        font-family:
-          "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-        font-size: 13px;
-        line-height: 1.7;
-      }
-
-      .notice {
-        border-left: 4px solid var(--amber);
+      .console-note {
         background: #fff8eb;
-        padding: 16px 18px;
+        color: #63461d;
+        border-left: 4px solid var(--amber);
         border-radius: 8px;
-        color: #5d421d;
+        padding: 12px 14px;
+        font-size: 13px;
       }
 
-      footer {
-        border-top: 1px solid var(--line);
-        padding: 28px 0;
-        color: var(--muted);
-        font-size: 14px;
-      }
-
-      @media (max-width: 920px) {
-        .hero,
-        .grid,
-        .pipeline {
+      @media (max-width: 1180px) {
+        .dashboard,
+        .workbench {
           grid-template-columns: 1fr;
         }
 
-        h1 {
-          font-size: 40px;
+        .mode-grid,
+        .kpi-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
         }
+      }
 
+      @media (max-width: 680px) {
         .nav {
           align-items: flex-start;
           flex-direction: column;
-          padding: 14px 0;
+          padding: 12px 0;
         }
 
-        .nav-links {
-          flex-wrap: wrap;
+        .mode-grid,
+        .kpi-grid,
+        .split,
+        .button-row {
+          grid-template-columns: 1fr;
+        }
+
+        .kv {
+          grid-template-columns: 1fr;
         }
       }
     </style>
@@ -360,137 +529,630 @@
   <body>
     <header>
       <div class="shell nav">
-        <a class="brand" href="./" aria-label="TradingAgents A/H 首页">
-          <span class="mark">AH</span>
-          <span>TradingAgents A/H 平台</span>
+        <a class="brand" href="./" aria-label="TradingAgents A/H 控制台">
+          <span class="brand-mark">AH</span>
+          <span>
+            <span class="brand-title">TradingAgents A/H 控制台</span>
+            <span class="brand-subtitle">研究、仿真、审批、自动化保护</span>
+          </span>
         </a>
         <nav class="nav-links" aria-label="主导航">
-          <a href="#architecture">架构</a>
-          <a href="#modules">模块</a>
-          <a href="#quickstart">快速开始</a>
+          <a href="./docs/design.html">平台设计</a>
           <a href="https://github.com/baokaijian/TradingAgents">GitHub</a>
+          <span class="status-pill"><span class="dot"></span><span id="runtimeStatus">本地仿真就绪</span></span>
         </nav>
       </div>
     </header>
 
-    <main>
-      <section class="shell hero">
-        <div>
-          <span class="eyebrow">基于 TradingAgents 的 A 股 / 港股自动化交易工具平台</span>
-          <h1>让多 Agent 研究结论进入可风控、可审计的交易流程。</h1>
-          <p class="lead">
-            平台保留 TradingAgents 的研究与辩论能力，在外层加入证券解析、信号标准化、
-            A/H 市场规则、账户风控、订单意图和 paper broker。LLM 负责研究与解释，
-            确定性系统负责能不能交易。
-          </p>
-          <div class="actions">
-            <a class="button primary" href="https://github.com/baokaijian/TradingAgents">查看源码</a>
-            <a class="button secondary" href="./docs/design.html">阅读设计文档</a>
-          </div>
-        </div>
+    <main class="shell">
+      <section class="mode-grid" aria-label="四阶段运行模式">
+        <button class="mode-card active" data-mode="research_only" type="button">
+          <strong>阶段一：A/H 研究版</strong>
+          <span>只生成研究信号，不生成订单。</span>
+        </button>
+        <button class="mode-card" data-mode="paper_trading" type="button">
+          <strong>阶段二：仿真交易版</strong>
+          <span>规则和风控通过后进入 paper broker。</span>
+        </button>
+        <button class="mode-card" data-mode="live_guarded" type="button">
+          <strong>阶段三：半自动实盘</strong>
+          <span>通过检查后进入人工审批队列。</span>
+        </button>
+        <button class="mode-card" data-mode="live_auto" type="button">
+          <strong>阶段四：小额度自动</strong>
+          <span>仅白名单标的和额度内自动执行。</span>
+        </button>
+      </section>
 
-        <div class="terminal" aria-label="平台运行状态示意">
-          <div class="terminal-top">
-            <div class="dots">
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
+      <section class="kpi-grid" aria-label="账户指标">
+        <div class="kpi"><div class="kpi-label">当前模式</div><div class="kpi-value" id="modeKpi">研究版</div></div>
+        <div class="kpi"><div class="kpi-label">账户权益</div><div class="kpi-value" id="equityKpi">200,000</div></div>
+        <div class="kpi"><div class="kpi-label">待审批</div><div class="kpi-value" id="approvalKpi">0</div></div>
+        <div class="kpi"><div class="kpi-label">订单数</div><div class="kpi-value" id="ordersKpi">0</div></div>
+      </section>
+
+      <section class="dashboard">
+        <aside class="panel">
+          <div class="panel-header">
+            <div>
+              <h1 class="panel-title">交易任务输入</h1>
+              <p class="panel-note">输入组合经理决策和行情快照，控制台会执行信号标准化、规则检查和风控。</p>
             </div>
-            <span>paper-trading preview</span>
           </div>
-          <div class="terminal-body">
-            <div class="row"><span>0700.HK</span><span>Signal: BUY / conviction 0.80</span><span class="ok">PASS</span></div>
-            <div class="row"><span>Rules</span><span>HK lot size, tick size, session</span><span class="ok">PASS</span></div>
-            <div class="row"><span>Risk</span><span>cash, notional, position weight</span><span class="ok">PASS</span></div>
-            <div class="row"><span>Order</span><span>LIMIT 100 @ 350.00 HKD</span><span class="ok">FILLED</span></div>
-            <div class="row"><span>600519.SH</span><span>price above daily limit-up</span><span class="warn">REJECT</span></div>
-          </div>
-        </div>
-      </section>
+          <div class="panel-body control-stack">
+            <div class="field">
+              <label for="symbol">标的代码</label>
+              <select id="symbol">
+                <option value="0700.HK">0700.HK 腾讯控股</option>
+                <option value="600519.SH">600519.SH 贵州茅台</option>
+                <option value="000001.SZ">000001.SZ 平安银行</option>
+                <option value="9988.HK">9988.HK 阿里巴巴</option>
+              </select>
+            </div>
 
-      <section class="shell section" id="architecture">
-        <h2>平台架构</h2>
-        <p class="section-intro">
-          当前版本是面向 research-only 和 paper-trading 的 MVP。它不绕过风控，也不允许
-          LLM 直接连接券商接口；所有订单都必须先通过市场规则与账户风控。
-        </p>
-        <div class="pipeline">
-          <div class="step">
-            <div class="step-number">01</div>
-            <strong>TradingAgents</strong>
-            <span>多 Agent 生成研究报告、交易计划与组合经理决策。</span>
-          </div>
-          <div class="step">
-            <div class="step-number">02</div>
-            <strong>SignalNormalizer</strong>
-            <span>把 Markdown 决策转换为结构化 SignalIntent。</span>
-          </div>
-          <div class="step">
-            <div class="step-number">03</div>
-            <strong>MarketRuleEngine</strong>
-            <span>检查 A 股/港股时段、手数、tick、涨跌幅与可卖数量。</span>
-          </div>
-          <div class="step">
-            <div class="step-number">04</div>
-            <strong>RiskEngine</strong>
-            <span>检查现金、单笔金额、仓位权重、置信度和黑名单。</span>
-          </div>
-          <div class="step">
-            <div class="step-number">05</div>
-            <strong>PaperBroker</strong>
-            <span>在仿真账户中生成订单状态、成交和持仓变化。</span>
-          </div>
-        </div>
-      </section>
+            <div class="split">
+              <div class="field">
+                <label for="rating">Agent 评级</label>
+                <select id="rating">
+                  <option>Buy</option>
+                  <option>Overweight</option>
+                  <option>Hold</option>
+                  <option>Underweight</option>
+                  <option>Sell</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="notional">计划金额</label>
+                <input id="notional" type="number" min="0" step="1000" value="35000" />
+              </div>
+            </div>
 
-      <section class="shell section" id="modules">
-        <h2>已落地模块</h2>
-        <p class="section-intro">
-          平台层代码位于 <code>trading_platform/</code>，与原始 <code>tradingagents/</code>
-          研究框架分层放置，后续可独立扩展数据源、回测和券商网关。
-        </p>
-        <div class="grid">
-          <article class="card">
-            <h3>A/H 证券解析</h3>
-            <p>支持 <code>600519.SH</code>、<code>000001.SZ</code>、<code>0700.HK</code>，补齐市场、币种、手数、板块与涨跌幅属性。</p>
-          </article>
-          <article class="card">
-            <h3>市场规则检查</h3>
-            <p>A 股支持 100 股手数、0.01 tick、涨跌幅和 T+1 可卖检查；港股支持每手股数、常用 tick table 与交易时段检查。</p>
-          </article>
-          <article class="card">
-            <h3>确定性风控</h3>
-            <p>默认禁用市价单，检查最小置信度、最大单笔金额、最大仓位权重、可用现金与可卖持仓。</p>
-          </article>
-        </div>
-      </section>
+            <div class="split">
+              <div class="field">
+                <label for="last">最新价</label>
+                <input id="last" type="number" min="0" step="0.01" value="350" />
+              </div>
+              <div class="field">
+                <label for="previousClose">昨收价</label>
+                <input id="previousClose" type="number" min="0" step="0.01" value="348" />
+              </div>
+            </div>
 
-      <section class="shell section" id="quickstart">
-        <h2>快速开始</h2>
-        <p class="section-intro">使用 Python 3.10+ 安装并运行平台层测试。</p>
-        <div class="code">
-          <pre><code>git clone git@github.com:baokaijian/TradingAgents.git
-cd TradingAgents
-python3.12 -m venv .venv
-source .venv/bin/activate
-pip install -e ".[dev]"
-python -m pytest tests/trading_platform -q</code></pre>
-        </div>
-      </section>
+            <div class="split">
+              <div class="field">
+                <label for="bid">买一价</label>
+                <input id="bid" type="number" min="0" step="0.01" value="349.8" />
+              </div>
+              <div class="field">
+                <label for="ask">卖一价</label>
+                <input id="ask" type="number" min="0" step="0.01" value="350" />
+              </div>
+            </div>
 
-      <section class="shell section">
-        <div class="notice">
-          <strong>安全边界：</strong>
-          当前平台默认不开实盘、默认禁止市价单、默认 Hold 不生成订单、默认任何规则或风控失败都会拒绝订单。
-          实盘能力必须通过独立 broker gateway 显式接入，并保留完整审计。
-        </div>
+            <div class="split">
+              <div class="field">
+                <label for="cash">现金</label>
+                <input id="cash" type="number" min="0" step="1000" value="100000" />
+              </div>
+              <div class="field">
+                <label for="equity">账户权益</label>
+                <input id="equity" type="number" min="0" step="1000" value="200000" />
+              </div>
+            </div>
+
+            <div class="split">
+              <div class="field">
+                <label for="sellable">可卖数量</label>
+                <input id="sellable" type="number" min="0" step="100" value="0" />
+              </div>
+              <div class="field">
+                <label for="autoWhitelist">自动白名单</label>
+                <input id="autoWhitelist" value="0700.HK,600519.SH" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="rationale">Agent 摘要</label>
+              <textarea id="rationale">Strong setup with controlled risk. Market structure is constructive, but orders must pass deterministic A/H rules.</textarea>
+            </div>
+
+            <div class="button-row">
+              <button class="btn primary" id="runBtn" type="button">运行工作流</button>
+              <button class="btn" id="resetBtn" type="button">重置控制台</button>
+            </div>
+
+            <div class="console-note">
+              当前页面是本地前端仿真控制台，展示平台四阶段操作路径。真正实盘必须接入后端 API、券商网关、权限和审计。
+            </div>
+          </div>
+        </aside>
+
+        <section class="workbench">
+          <div class="cards">
+            <article class="result-card">
+              <div class="result-head">
+                <strong>信号标准化</strong>
+                <span class="badge info" id="signalBadge">等待输入</span>
+              </div>
+              <div class="result-body kv" id="signalView">
+                <div>状态</div><div>点击“运行工作流”后生成 SignalIntent。</div>
+              </div>
+            </article>
+
+            <article class="result-card">
+              <div class="result-head">
+                <strong>市场规则与风控</strong>
+                <span class="badge info" id="validationBadge">未运行</span>
+              </div>
+              <div class="result-body">
+                <ul class="issue-list" id="validationList">
+                  <li>尚未执行规则检查。</li>
+                </ul>
+              </div>
+            </article>
+
+            <article class="result-card">
+              <div class="result-head">
+                <strong>订单台账</strong>
+                <span class="badge info" id="ordersBadge">0</span>
+              </div>
+              <div class="result-body table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>订单号</th><th>标的</th><th>方向</th><th>数量</th><th>价格</th><th>状态</th></tr>
+                  </thead>
+                  <tbody id="ordersBody">
+                    <tr><td colspan="6">暂无订单。</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+          </div>
+
+          <aside class="cards">
+            <article class="result-card">
+              <div class="result-head">
+                <strong>审批队列</strong>
+                <span class="badge warn" id="approvalBadge">0</span>
+              </div>
+              <div class="result-body" id="approvalView">
+                <div class="empty">阶段三会在这里生成待审批订单。</div>
+              </div>
+            </article>
+
+            <article class="result-card">
+              <div class="result-head">
+                <strong>持仓</strong>
+                <span class="badge ok" id="positionBadge">0</span>
+              </div>
+              <div class="result-body table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>标的</th><th>数量</th><th>可卖</th><th>成本</th><th>市值</th></tr>
+                  </thead>
+                  <tbody id="positionsBody">
+                    <tr><td colspan="5">暂无持仓。</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+
+            <article class="result-card">
+              <div class="result-head">
+                <strong>操作日志</strong>
+                <span class="badge info">Audit</span>
+              </div>
+              <div class="result-body">
+                <ul class="event-log" id="eventLog">
+                  <li>控制台已加载，等待操作。</li>
+                </ul>
+              </div>
+            </article>
+          </aside>
+        </section>
       </section>
     </main>
 
-    <footer>
-      <div class="shell">
-        TradingAgents A/H 自动化交易平台 · 基于 TradingAgents 的 A 股与港股交易系统工程化改造
-      </div>
-    </footer>
+    <script>
+      const state = {
+        mode: "research_only",
+        orders: [],
+        tickets: [],
+        positions: {},
+        cash: 100000,
+        equity: 200000,
+        orderSeq: 1,
+        ticketSeq: 1,
+      };
+
+      const phaseNames = {
+        research_only: "研究版",
+        paper_trading: "仿真版",
+        live_guarded: "半自动",
+        live_auto: "自动保护",
+      };
+
+      const instruments = {
+        "0700.HK": { market: "HK", currency: "HKD", lot: 100, limitPct: null, tick: "hk" },
+        "9988.HK": { market: "HK", currency: "HKD", lot: 100, limitPct: null, tick: "hk" },
+        "600519.SH": { market: "CN_SH", currency: "CNY", lot: 100, limitPct: 0.10, tick: 0.01 },
+        "000001.SZ": { market: "CN_SZ", currency: "CNY", lot: 100, limitPct: 0.10, tick: 0.01 },
+      };
+
+      const ratingMap = {
+        Buy: { side: "BUY", conviction: 0.8 },
+        Overweight: { side: "INCREASE", conviction: 0.65 },
+        Hold: { side: "HOLD", conviction: 0 },
+        Underweight: { side: "REDUCE", conviction: 0.6 },
+        Sell: { side: "SELL", conviction: 0.8 },
+      };
+
+      const $ = (id) => document.getElementById(id);
+
+      function numberValue(id) {
+        return Number($(id).value || 0);
+      }
+
+      function formatNumber(value, digits = 2) {
+        return Number(value).toLocaleString("zh-CN", {
+          minimumFractionDigits: digits,
+          maximumFractionDigits: digits,
+        });
+      }
+
+      function hkTick(price) {
+        if (price < 0.25) return 0.001;
+        if (price < 0.5) return 0.005;
+        if (price < 10) return 0.01;
+        if (price < 20) return 0.02;
+        if (price < 100) return 0.05;
+        if (price < 200) return 0.1;
+        if (price < 500) return 0.2;
+        if (price < 1000) return 0.5;
+        if (price < 2000) return 1;
+        if (price < 5000) return 2;
+        return 5;
+      }
+
+      function alignsToTick(price, tick) {
+        const multiple = Math.round(price / tick);
+        return Math.abs(price - multiple * tick) < 0.0000001;
+      }
+
+      function normalizeSignal() {
+        const symbol = $("symbol").value;
+        const rating = $("rating").value;
+        const spec = instruments[symbol];
+        const mapped = ratingMap[rating];
+        return {
+          runId: `run_${Date.now().toString(36)}`,
+          symbol,
+          market: spec.market,
+          currency: spec.currency,
+          rating,
+          side: mapped.side,
+          conviction: mapped.conviction,
+          maxNotional: numberValue("notional"),
+          rationale: $("rationale").value.trim(),
+        };
+      }
+
+      function buildOrder(signal) {
+        if (signal.side === "HOLD") return null;
+        const spec = instruments[signal.symbol];
+        const price = numberValue("ask") || numberValue("last");
+        const rawQty = Math.floor(signal.maxNotional / price);
+        const quantity = Math.max(spec.lot, Math.floor(rawQty / spec.lot) * spec.lot);
+        const side = ["BUY", "INCREASE"].includes(signal.side) ? "BUY" : "SELL";
+        return {
+          id: `ord_${String(state.orderSeq).padStart(4, "0")}`,
+          signalId: signal.runId,
+          symbol: signal.symbol,
+          side,
+          quantity,
+          price,
+          status: "NEW",
+        };
+      }
+
+      function validate(signal, order) {
+        const issues = [];
+        const spec = instruments[signal.symbol];
+        const prev = numberValue("previousClose");
+        const cash = numberValue("cash");
+        const equity = numberValue("equity");
+        const sellable = numberValue("sellable");
+
+        if (signal.side !== "HOLD" && signal.conviction < 0.55) {
+          issues.push(["low_conviction", "信号置信度低于 0.55。"]);
+        }
+        if (!order) return issues;
+        if (order.quantity <= 0 || order.quantity % spec.lot !== 0) {
+          issues.push(["lot_size", `数量必须是每手 ${spec.lot} 的整数倍。`]);
+        }
+
+        const tick = spec.tick === "hk" ? hkTick(order.price) : spec.tick;
+        if (!alignsToTick(order.price, tick)) {
+          issues.push(["tick_size", `价格 ${order.price} 不符合 tick size ${tick}。`]);
+        }
+
+        if (spec.limitPct !== null) {
+          const up = Number((prev * (1 + spec.limitPct)).toFixed(2));
+          const down = Number((prev * (1 - spec.limitPct)).toFixed(2));
+          if (order.price > up) issues.push(["above_limit_up", `价格高于涨停价 ${up}。`]);
+          if (order.price < down) issues.push(["below_limit_down", `价格低于跌停价 ${down}。`]);
+        }
+
+        const notional = order.quantity * order.price;
+        if (notional > 100000) {
+          issues.push(["order_notional_limit", "单笔金额超过 100,000 的默认限制。"]);
+        }
+        if (order.side === "BUY" && notional > cash) {
+          issues.push(["insufficient_cash", "现金不足，无法生成买入订单。"]);
+        }
+        if (order.side === "BUY" && notional / Math.max(equity, 1) > 0.2) {
+          issues.push(["position_weight_limit", "预计仓位超过账户权益 20%。"]);
+        }
+        if (order.side === "SELL" && order.quantity > sellable) {
+          issues.push(["sellable_quantity", "卖出数量超过可卖数量，A 股需遵守 T+1 可卖约束。"]);
+        }
+
+        if (state.mode === "live_auto") {
+          const whitelist = $("autoWhitelist").value.split(",").map((x) => x.trim()).filter(Boolean);
+          if (!whitelist.includes(signal.symbol)) {
+            issues.push(["auto_symbol_not_allowed", "标的不在自动交易白名单内。"]);
+          }
+          if (notional > 50000) {
+            issues.push(["auto_notional_limit", "阶段四自动执行单笔金额不得超过 50,000。"]);
+          }
+        }
+
+        return issues;
+      }
+
+      function fillPaper(order) {
+        const fillPrice = order.side === "BUY" ? numberValue("ask") || order.price : numberValue("bid") || order.price;
+        order.status = "FILLED";
+        order.price = fillPrice;
+        state.orders.push(order);
+        state.orderSeq += 1;
+
+        const pos = state.positions[order.symbol] || { quantity: 0, sellable: 0, avgCost: 0, marketValue: 0 };
+        if (order.side === "BUY") {
+          const totalCost = pos.avgCost * pos.quantity + order.quantity * fillPrice;
+          pos.quantity += order.quantity;
+          pos.avgCost = totalCost / pos.quantity;
+          pos.marketValue = pos.quantity * fillPrice;
+          state.cash -= order.quantity * fillPrice;
+        } else {
+          pos.quantity = Math.max(0, pos.quantity - order.quantity);
+          pos.sellable = Math.max(0, pos.sellable - order.quantity);
+          pos.marketValue = pos.quantity * fillPrice;
+          state.cash += order.quantity * fillPrice;
+        }
+        state.positions[order.symbol] = pos;
+        addLog(`订单 ${order.id} 已仿真成交，${order.symbol} ${order.side} ${order.quantity} @ ${formatNumber(fillPrice)}。`);
+      }
+
+      function runWorkflow() {
+        state.cash = numberValue("cash");
+        state.equity = numberValue("equity");
+        const signal = normalizeSignal();
+        const order = buildOrder(signal);
+        const issues = validate(signal, order);
+
+        renderSignal(signal, order);
+        renderValidation(issues);
+
+        if (state.mode === "research_only") {
+          addLog(`阶段一完成：${signal.symbol} 生成 ${signal.side} 信号，不生成订单。`);
+        } else if (signal.side === "HOLD") {
+          addLog(`评级为 Hold：不生成订单。`);
+        } else if (issues.length > 0) {
+          addLog(`工作流拒绝：${issues.map((issue) => issue[0]).join(", ")}。`);
+        } else if (state.mode === "live_guarded") {
+          const ticket = {
+            id: `apr_${String(state.ticketSeq).padStart(4, "0")}`,
+            signal,
+            order,
+            status: "PENDING",
+          };
+          state.ticketSeq += 1;
+          state.tickets.push(ticket);
+          addLog(`阶段三生成审批票据 ${ticket.id}，等待人工批准。`);
+        } else {
+          fillPaper(order);
+        }
+
+        renderAll();
+      }
+
+      function approveTicket(id) {
+        const ticket = state.tickets.find((item) => item.id === id);
+        if (!ticket || ticket.status !== "PENDING") return;
+        ticket.status = "EXECUTED";
+        fillPaper(ticket.order);
+        addLog(`审批票据 ${id} 已批准并执行。`);
+        renderAll();
+      }
+
+      function rejectTicket(id) {
+        const ticket = state.tickets.find((item) => item.id === id);
+        if (!ticket || ticket.status !== "PENDING") return;
+        ticket.status = "REJECTED";
+        addLog(`审批票据 ${id} 已拒绝。`);
+        renderAll();
+      }
+
+      function resetConsole() {
+        state.orders = [];
+        state.tickets = [];
+        state.positions = {};
+        state.orderSeq = 1;
+        state.ticketSeq = 1;
+        $("eventLog").innerHTML = "<li>控制台已重置，等待操作。</li>";
+        renderSignal(null, null);
+        renderValidation([]);
+        renderAll();
+      }
+
+      function addLog(message) {
+        const li = document.createElement("li");
+        li.textContent = `${new Date().toLocaleTimeString("zh-CN")} · ${message}`;
+        $("eventLog").prepend(li);
+      }
+
+      function renderSignal(signal, order) {
+        if (!signal) {
+          $("signalBadge").className = "badge info";
+          $("signalBadge").textContent = "等待输入";
+          $("signalView").innerHTML = "<div>状态</div><div>点击“运行工作流”后生成 SignalIntent。</div>";
+          return;
+        }
+        $("signalBadge").className = signal.side === "HOLD" ? "badge warn" : "badge ok";
+        $("signalBadge").textContent = signal.side;
+        $("signalView").innerHTML = `
+          <div>Run ID</div><div>${signal.runId}</div>
+          <div>标的</div><div>${signal.symbol} / ${signal.market}</div>
+          <div>评级</div><div>${signal.rating}</div>
+          <div>方向</div><div>${signal.side}</div>
+          <div>置信度</div><div>${signal.conviction.toFixed(2)}</div>
+          <div>计划金额</div><div>${formatNumber(signal.maxNotional)}</div>
+          <div>订单意图</div><div>${order ? `${order.side} ${order.quantity} @ ${formatNumber(order.price)}` : "不生成订单"}</div>
+          <div>理由</div><div>${escapeHtml(signal.rationale)}</div>
+        `;
+      }
+
+      function renderValidation(issues) {
+        if (issues.length === 0) {
+          $("validationBadge").className = "badge ok";
+          $("validationBadge").textContent = "PASS";
+          $("validationList").innerHTML = "<li>所有当前模式下的市场规则与风控检查均通过。</li>";
+          return;
+        }
+        $("validationBadge").className = "badge fail";
+        $("validationBadge").textContent = "REJECT";
+        $("validationList").innerHTML = issues
+          .map(([code, message]) => `<li><strong>${code}</strong><br>${message}</li>`)
+          .join("");
+      }
+
+      function renderAll() {
+        document.querySelectorAll(".mode-card").forEach((card) => {
+          card.classList.toggle("active", card.dataset.mode === state.mode);
+        });
+        $("modeKpi").textContent = phaseNames[state.mode];
+        $("equityKpi").textContent = formatNumber(numberValue("equity"), 0);
+        $("approvalKpi").textContent = state.tickets.filter((ticket) => ticket.status === "PENDING").length;
+        $("ordersKpi").textContent = state.orders.length;
+        $("approvalBadge").textContent = state.tickets.filter((ticket) => ticket.status === "PENDING").length;
+        $("ordersBadge").textContent = state.orders.length;
+        $("positionBadge").textContent = Object.keys(state.positions).length;
+        renderTickets();
+        renderOrders();
+        renderPositions();
+      }
+
+      function renderTickets() {
+        const pending = state.tickets.filter((ticket) => ticket.status === "PENDING");
+        if (state.tickets.length === 0) {
+          $("approvalView").innerHTML = '<div class="empty">阶段三会在这里生成待审批订单。</div>';
+          return;
+        }
+        $("approvalView").innerHTML = state.tickets
+          .map((ticket) => `
+            <div class="issue-list" style="margin-bottom:8px">
+              <li>
+                <strong>${ticket.id}</strong> · ${ticket.signal.symbol} · ${ticket.order.side} ${ticket.order.quantity}
+                <br>状态：${ticket.status}
+                ${ticket.status === "PENDING" ? `
+                  <div class="ticket-actions" style="margin-top:8px">
+                    <button class="mini-btn primary" onclick="approveTicket('${ticket.id}')">批准执行</button>
+                    <button class="mini-btn danger" onclick="rejectTicket('${ticket.id}')">拒绝</button>
+                  </div>` : ""}
+              </li>
+            </div>
+          `)
+          .join("");
+      }
+
+      function renderOrders() {
+        if (state.orders.length === 0) {
+          $("ordersBody").innerHTML = '<tr><td colspan="6">暂无订单。</td></tr>';
+          return;
+        }
+        $("ordersBody").innerHTML = state.orders
+          .map((order) => `
+            <tr>
+              <td>${order.id}</td>
+              <td>${order.symbol}</td>
+              <td>${order.side}</td>
+              <td>${order.quantity}</td>
+              <td>${formatNumber(order.price)}</td>
+              <td>${order.status}</td>
+            </tr>
+          `)
+          .join("");
+      }
+
+      function renderPositions() {
+        const entries = Object.entries(state.positions).filter(([, pos]) => pos.quantity > 0);
+        if (entries.length === 0) {
+          $("positionsBody").innerHTML = '<tr><td colspan="5">暂无持仓。</td></tr>';
+          return;
+        }
+        $("positionsBody").innerHTML = entries
+          .map(([symbol, pos]) => `
+            <tr>
+              <td>${symbol}</td>
+              <td>${pos.quantity}</td>
+              <td>${pos.sellable}</td>
+              <td>${formatNumber(pos.avgCost)}</td>
+              <td>${formatNumber(pos.marketValue)}</td>
+            </tr>
+          `)
+          .join("");
+      }
+
+      function escapeHtml(value) {
+        return value.replace(/[&<>"']/g, (char) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;",
+        }[char]));
+      }
+
+      function syncSymbolDefaults() {
+        const symbol = $("symbol").value;
+        if (symbol.endsWith(".HK")) {
+          $("last").value = symbol === "9988.HK" ? 82 : 350;
+          $("previousClose").value = symbol === "9988.HK" ? 81.5 : 348;
+          $("bid").value = symbol === "9988.HK" ? 81.95 : 349.8;
+          $("ask").value = symbol === "9988.HK" ? 82 : 350;
+        } else {
+          $("last").value = symbol === "600519.SH" ? 1500 : 10;
+          $("previousClose").value = symbol === "600519.SH" ? 1492 : 9.9;
+          $("bid").value = symbol === "600519.SH" ? 1499.8 : 9.99;
+          $("ask").value = symbol === "600519.SH" ? 1500 : 10;
+        }
+      }
+
+      document.querySelectorAll(".mode-card").forEach((card) => {
+        card.addEventListener("click", () => {
+          state.mode = card.dataset.mode;
+          addLog(`切换到${card.querySelector("strong").textContent}。`);
+          renderAll();
+        });
+      });
+      $("runBtn").addEventListener("click", runWorkflow);
+      $("resetBtn").addEventListener("click", resetConsole);
+      $("symbol").addEventListener("change", syncSymbolDefaults);
+
+      window.approveTicket = approveTicket;
+      window.rejectTicket = rejectTicket;
+      renderAll();
+    </script>
   </body>
 </html>

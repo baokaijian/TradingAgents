@@ -77,6 +77,20 @@ class OrderStatus(str, Enum):
     REJECTED = "REJECTED"
 
 
+class PlatformMode(str, Enum):
+    RESEARCH_ONLY = "research_only"
+    PAPER_TRADING = "paper_trading"
+    LIVE_GUARDED = "live_guarded"
+    LIVE_AUTO = "live_auto"
+
+
+class ApprovalStatus(str, Enum):
+    PENDING = "PENDING"
+    APPROVED = "APPROVED"
+    REJECTED = "REJECTED"
+    EXECUTED = "EXECUTED"
+
+
 @dataclass(frozen=True)
 class Instrument:
     symbol: str
@@ -228,8 +242,32 @@ class RiskLimits:
     allow_market_orders: bool = False
     blocked_symbols: frozenset[str] = frozenset()
     require_manual_approval: bool = True
+    auto_trade_enabled: bool = False
+    auto_trade_symbols: frozenset[str] = frozenset()
+    max_auto_order_notional: float = 20_000.0
+
+
+@dataclass
+class ApprovalTicket:
+    ticket_id: str
+    signal: SignalIntent
+    order_intent: OrderIntent
+    validation: ValidationResult
+    status: ApprovalStatus = ApprovalStatus.PENDING
+    reviewer: str | None = None
+    comment: str | None = None
+    created_at: datetime = field(default_factory=datetime.utcnow)
+    updated_at: datetime = field(default_factory=datetime.utcnow)
+
+
+@dataclass(frozen=True)
+class PhaseCapability:
+    mode: PlatformMode
+    name: str
+    description: str
+    order_behavior: str
+    required_controls: tuple[str, ...]
 
 
 def new_id(prefix: str) -> str:
     return f"{prefix}_{uuid4().hex[:12]}"
-
