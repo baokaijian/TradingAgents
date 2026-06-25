@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TradingAgents A/H 自动化交易平台</title>
+    <meta
+      name="description"
+      content="基于 TradingAgents 的 A 股与港股自动化交易工具平台入口页。"
+    />
+    <style>
+      :root {
+        --bg: #f6f8f7;
+        --panel: #ffffff;
+        --ink: #17201b;
+        --muted: #5d6b64;
+        --line: #dfe6e2;
+        --green: #0f7b57;
+        --green-dark: #0a563e;
+        --blue: #205f95;
+        --amber: #ad7116;
+        --soft: #e9f4ef;
+        --shadow: 0 18px 45px rgba(23, 32, 27, 0.1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+          sans-serif;
+        line-height: 1.6;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .shell {
+        max-width: 1160px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      header {
+        border-bottom: 1px solid var(--line);
+        background: rgba(246, 248, 247, 0.92);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        backdrop-filter: blur(14px);
+      }
+
+      .nav {
+        min-height: 72px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 750;
+        letter-spacing: 0;
+      }
+
+      .mark {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        background: var(--green);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .nav-links a:hover {
+        color: var(--green-dark);
+      }
+
+      main {
+        padding-bottom: 72px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(360px, 0.86fr);
+        gap: 42px;
+        align-items: center;
+        padding: 76px 0 56px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 11px;
+        border: 1px solid #c8ddd3;
+        border-radius: 999px;
+        color: var(--green-dark);
+        background: var(--soft);
+        font-size: 13px;
+        font-weight: 650;
+      }
+
+      h1 {
+        margin: 20px 0 18px;
+        max-width: 720px;
+        font-size: 52px;
+        line-height: 1.08;
+        letter-spacing: 0;
+      }
+
+      .lead {
+        max-width: 720px;
+        color: var(--muted);
+        font-size: 18px;
+        margin: 0 0 28px;
+      }
+
+      .actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 0 18px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        font-weight: 700;
+      }
+
+      .button.primary {
+        background: var(--green);
+        color: white;
+        border-color: var(--green);
+      }
+
+      .button.primary:hover {
+        background: var(--green-dark);
+      }
+
+      .button.secondary {
+        background: white;
+        color: var(--ink);
+      }
+
+      .button.secondary:hover {
+        border-color: #b7c8bf;
+      }
+
+      .terminal {
+        background: #101714;
+        color: #d9efe5;
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        border: 1px solid #24352e;
+      }
+
+      .terminal-top {
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 14px;
+        border-bottom: 1px solid #24352e;
+        color: #93ada1;
+        font-size: 13px;
+      }
+
+      .dots {
+        display: flex;
+        gap: 7px;
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #547064;
+      }
+
+      .terminal-body {
+        padding: 18px;
+        font-family:
+          "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        font-size: 13px;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 92px 1fr 72px;
+        gap: 12px;
+        padding: 9px 0;
+        border-bottom: 1px solid rgba(217, 239, 229, 0.08);
+      }
+
+      .row:last-child {
+        border-bottom: 0;
+      }
+
+      .ok {
+        color: #6ee7ad;
+      }
+
+      .warn {
+        color: #f8c36a;
+      }
+
+      .section {
+        padding: 48px 0;
+      }
+
+      .section h2 {
+        margin: 0 0 14px;
+        font-size: 30px;
+        line-height: 1.2;
+        letter-spacing: 0;
+      }
+
+      .section-intro {
+        color: var(--muted);
+        max-width: 760px;
+        margin: 0 0 26px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 20px;
+      }
+
+      .card h3 {
+        margin: 0 0 8px;
+        font-size: 18px;
+      }
+
+      .card p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .pipeline {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .step {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+        min-height: 132px;
+      }
+
+      .step-number {
+        color: var(--green);
+        font-weight: 800;
+        margin-bottom: 8px;
+      }
+
+      .step strong {
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      .step span {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .code {
+        background: #101714;
+        border-radius: 8px;
+        color: #d9efe5;
+        padding: 18px;
+        overflow-x: auto;
+        border: 1px solid #24352e;
+      }
+
+      pre {
+        margin: 0;
+        font-family:
+          "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        font-size: 13px;
+        line-height: 1.7;
+      }
+
+      .notice {
+        border-left: 4px solid var(--amber);
+        background: #fff8eb;
+        padding: 16px 18px;
+        border-radius: 8px;
+        color: #5d421d;
+      }
+
+      footer {
+        border-top: 1px solid var(--line);
+        padding: 28px 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      @media (max-width: 920px) {
+        .hero,
+        .grid,
+        .pipeline {
+          grid-template-columns: 1fr;
+        }
+
+        h1 {
+          font-size: 40px;
+        }
+
+        .nav {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 14px 0;
+        }
+
+        .nav-links {
+          flex-wrap: wrap;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="shell nav">
+        <a class="brand" href="./" aria-label="TradingAgents A/H 首页">
+          <span class="mark">AH</span>
+          <span>TradingAgents A/H 平台</span>
+        </a>
+        <nav class="nav-links" aria-label="主导航">
+          <a href="#architecture">架构</a>
+          <a href="#modules">模块</a>
+          <a href="#quickstart">快速开始</a>
+          <a href="https://github.com/baokaijian/TradingAgents">GitHub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="shell hero">
+        <div>
+          <span class="eyebrow">基于 TradingAgents 的 A 股 / 港股自动化交易工具平台</span>
+          <h1>让多 Agent 研究结论进入可风控、可审计的交易流程。</h1>
+          <p class="lead">
+            平台保留 TradingAgents 的研究与辩论能力，在外层加入证券解析、信号标准化、
+            A/H 市场规则、账户风控、订单意图和 paper broker。LLM 负责研究与解释，
+            确定性系统负责能不能交易。
+          </p>
+          <div class="actions">
+            <a class="button primary" href="https://github.com/baokaijian/TradingAgents">查看源码</a>
+            <a class="button secondary" href="./docs/ah_share_hk_auto_trading_platform_design.md">阅读设计文档</a>
+          </div>
+        </div>
+
+        <div class="terminal" aria-label="平台运行状态示意">
+          <div class="terminal-top">
+            <div class="dots">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+            <span>paper-trading preview</span>
+          </div>
+          <div class="terminal-body">
+            <div class="row"><span>0700.HK</span><span>Signal: BUY / conviction 0.80</span><span class="ok">PASS</span></div>
+            <div class="row"><span>Rules</span><span>HK lot size, tick size, session</span><span class="ok">PASS</span></div>
+            <div class="row"><span>Risk</span><span>cash, notional, position weight</span><span class="ok">PASS</span></div>
+            <div class="row"><span>Order</span><span>LIMIT 100 @ 350.00 HKD</span><span class="ok">FILLED</span></div>
+            <div class="row"><span>600519.SH</span><span>price above daily limit-up</span><span class="warn">REJECT</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="shell section" id="architecture">
+        <h2>平台架构</h2>
+        <p class="section-intro">
+          当前版本是面向 research-only 和 paper-trading 的 MVP。它不绕过风控，也不允许
+          LLM 直接连接券商接口；所有订单都必须先通过市场规则与账户风控。
+        </p>
+        <div class="pipeline">
+          <div class="step">
+            <div class="step-number">01</div>
+            <strong>TradingAgents</strong>
+            <span>多 Agent 生成研究报告、交易计划与组合经理决策。</span>
+          </div>
+          <div class="step">
+            <div class="step-number">02</div>
+            <strong>SignalNormalizer</strong>
+            <span>把 Markdown 决策转换为结构化 SignalIntent。</span>
+          </div>
+          <div class="step">
+            <div class="step-number">03</div>
+            <strong>MarketRuleEngine</strong>
+            <span>检查 A 股/港股时段、手数、tick、涨跌幅与可卖数量。</span>
+          </div>
+          <div class="step">
+            <div class="step-number">04</div>
+            <strong>RiskEngine</strong>
+            <span>检查现金、单笔金额、仓位权重、置信度和黑名单。</span>
+          </div>
+          <div class="step">
+            <div class="step-number">05</div>
+            <strong>PaperBroker</strong>
+            <span>在仿真账户中生成订单状态、成交和持仓变化。</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="shell section" id="modules">
+        <h2>已落地模块</h2>
+        <p class="section-intro">
+          平台层代码位于 <code>trading_platform/</code>，与原始 <code>tradingagents/</code>
+          研究框架分层放置，后续可独立扩展数据源、回测和券商网关。
+        </p>
+        <div class="grid">
+          <article class="card">
+            <h3>A/H 证券解析</h3>
+            <p>支持 <code>600519.SH</code>、<code>000001.SZ</code>、<code>0700.HK</code>，补齐市场、币种、手数、板块与涨跌幅属性。</p>
+          </article>
+          <article class="card">
+            <h3>市场规则检查</h3>
+            <p>A 股支持 100 股手数、0.01 tick、涨跌幅和 T+1 可卖检查；港股支持每手股数、常用 tick table 与交易时段检查。</p>
+          </article>
+          <article class="card">
+            <h3>确定性风控</h3>
+            <p>默认禁用市价单，检查最小置信度、最大单笔金额、最大仓位权重、可用现金与可卖持仓。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="shell section" id="quickstart">
+        <h2>快速开始</h2>
+        <p class="section-intro">使用 Python 3.10+ 安装并运行平台层测试。</p>
+        <div class="code">
+          <pre><code>git clone git@github.com:baokaijian/TradingAgents.git
+cd TradingAgents
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+python -m pytest tests/trading_platform -q</code></pre>
+        </div>
+      </section>
+
+      <section class="shell section">
+        <div class="notice">
+          <strong>安全边界：</strong>
+          当前平台默认不开实盘、默认禁止市价单、默认 Hold 不生成订单、默认任何规则或风控失败都会拒绝订单。
+          实盘能力必须通过独立 broker gateway 显式接入，并保留完整审计。
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="shell">
+        TradingAgents A/H 自动化交易平台 · 基于 TradingAgents 的 A 股与港股交易系统工程化改造
+      </div>
+    </footer>
+  </body>
+</html>
