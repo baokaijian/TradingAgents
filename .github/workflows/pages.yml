@@ -33,6 +33,7 @@ jobs:
           mkdir -p _site/docs
           cp index.html _site/index.html
           cp .nojekyll _site/.nojekyll
+          cp docs/design.html _site/docs/
           cp docs/ah_share_hk_auto_trading_platform_design.md _site/docs/
 
       - uses: actions/configure-pages@v5

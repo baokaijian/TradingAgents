@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>平台设计 · TradingAgents A/H 自动化交易平台</title>
+    <meta
+      name="description"
+      content="TradingAgents A/H 自动化交易平台的产品化设计说明，覆盖架构、规则、风控、数据、执行和路线图。"
+    />
+    <style>
+      :root {
+        --bg: #f7f9f8;
+        --panel: #ffffff;
+        --ink: #17201b;
+        --muted: #607068;
+        --line: #dfe8e3;
+        --green: #0f7b57;
+        --green-dark: #0a563e;
+        --soft: #e8f4ef;
+        --blue: #245f8f;
+        --amber: #a56f18;
+        --red: #9a3e32;
+        --shadow: 0 16px 40px rgba(23, 32, 27, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+          sans-serif;
+        line-height: 1.65;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      code {
+        border: 1px solid #d8e4de;
+        background: #f2f7f4;
+        border-radius: 6px;
+        padding: 1px 5px;
+        font-family:
+          "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        font-size: 0.92em;
+      }
+
+      .shell {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: rgba(247, 249, 248, 0.92);
+        border-bottom: 1px solid var(--line);
+        backdrop-filter: blur(14px);
+      }
+
+      .nav {
+        min-height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 800;
+      }
+
+      .mark {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        background: var(--green);
+        font-weight: 900;
+      }
+
+      .nav-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .nav-links a:hover {
+        color: var(--green-dark);
+      }
+
+      .hero {
+        padding: 58px 0 34px;
+        border-bottom: 1px solid var(--line);
+        background:
+          linear-gradient(180deg, rgba(232, 244, 239, 0.65), rgba(247, 249, 248, 0)),
+          var(--bg);
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 360px;
+        gap: 34px;
+        align-items: stretch;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        padding: 7px 12px;
+        border: 1px solid #c8ddd3;
+        border-radius: 999px;
+        background: var(--soft);
+        color: var(--green-dark);
+        font-size: 13px;
+        font-weight: 750;
+      }
+
+      h1 {
+        margin: 18px 0 16px;
+        font-size: 48px;
+        line-height: 1.1;
+        letter-spacing: 0;
+      }
+
+      .lead {
+        max-width: 760px;
+        margin: 0;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .summary-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        padding: 22px;
+      }
+
+      .summary-card h2 {
+        margin: 0 0 14px;
+        font-size: 18px;
+      }
+
+      .summary-list {
+        display: grid;
+        gap: 10px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .summary-list li {
+        display: flex;
+        gap: 10px;
+        color: var(--muted);
+      }
+
+      .check {
+        width: 20px;
+        height: 20px;
+        flex: 0 0 auto;
+        border-radius: 6px;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        background: var(--green);
+        font-size: 13px;
+        font-weight: 900;
+        margin-top: 2px;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 240px minmax(0, 1fr);
+        gap: 28px;
+        padding: 36px 0 70px;
+      }
+
+      .toc {
+        position: sticky;
+        top: 94px;
+        align-self: start;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+      }
+
+      .toc strong {
+        display: block;
+        margin: 4px 8px 8px;
+      }
+
+      .toc a {
+        display: block;
+        padding: 8px;
+        border-radius: 6px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .toc a:hover {
+        background: var(--soft);
+        color: var(--green-dark);
+      }
+
+      section {
+        scroll-margin-top: 92px;
+        margin-bottom: 34px;
+      }
+
+      .section-head {
+        margin-bottom: 16px;
+      }
+
+      .section-head h2 {
+        margin: 0 0 8px;
+        font-size: 30px;
+        line-height: 1.2;
+      }
+
+      .section-head p {
+        margin: 0;
+        color: var(--muted);
+        max-width: 780px;
+      }
+
+      .grid-3,
+      .grid-2 {
+        display: grid;
+        gap: 14px;
+      }
+
+      .grid-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .card,
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+
+      .card {
+        padding: 18px;
+      }
+
+      .card h3 {
+        margin: 0 0 8px;
+        font-size: 18px;
+      }
+
+      .card p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .metric {
+        border-left: 4px solid var(--green);
+      }
+
+      .metric .value {
+        color: var(--green-dark);
+        font-size: 26px;
+        font-weight: 850;
+        line-height: 1.15;
+        margin-bottom: 8px;
+      }
+
+      .pipeline {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .pipe-step {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+        min-height: 138px;
+      }
+
+      .pipe-step span {
+        display: inline-flex;
+        width: 28px;
+        height: 28px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        background: var(--soft);
+        color: var(--green-dark);
+        font-weight: 850;
+        margin-bottom: 10px;
+      }
+
+      .pipe-step strong {
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      .pipe-step p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .compare {
+        overflow: hidden;
+      }
+
+      .compare table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .compare th,
+      .compare td {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .compare th {
+        background: #f2f7f4;
+        color: var(--green-dark);
+      }
+
+      .compare tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .tag-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tag {
+        display: inline-flex;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid #cfe0d8;
+        background: #f7fbf9;
+        color: var(--green-dark);
+        font-size: 13px;
+        font-weight: 650;
+      }
+
+      .roadmap {
+        display: grid;
+        gap: 12px;
+      }
+
+      .phase {
+        display: grid;
+        grid-template-columns: 116px minmax(0, 1fr);
+        gap: 14px;
+        padding: 16px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+
+      .phase-label {
+        color: var(--green-dark);
+        font-weight: 850;
+      }
+
+      .phase h3 {
+        margin: 0 0 6px;
+        font-size: 18px;
+      }
+
+      .phase p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .warning {
+        border-left: 4px solid var(--amber);
+        background: #fff8eb;
+        color: #63461d;
+        padding: 16px 18px;
+        border-radius: 8px;
+      }
+
+      .danger {
+        border-left-color: var(--red);
+        background: #fff2f0;
+        color: #65302a;
+      }
+
+      .code-panel {
+        background: #101714;
+        border-radius: 8px;
+        color: #d9efe5;
+        border: 1px solid #24352e;
+        overflow-x: auto;
+        padding: 18px;
+      }
+
+      pre {
+        margin: 0;
+        font-family:
+          "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        font-size: 13px;
+        line-height: 1.7;
+      }
+
+      footer {
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        padding: 26px 0;
+        font-size: 14px;
+      }
+
+      @media (max-width: 1020px) {
+        .hero-grid,
+        .layout,
+        .grid-3,
+        .grid-2,
+        .pipeline {
+          grid-template-columns: 1fr;
+        }
+
+        .toc {
+          position: static;
+        }
+
+        h1 {
+          font-size: 38px;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .nav {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 14px 0;
+        }
+
+        .phase {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="shell nav">
+        <a class="brand" href="../">
+          <span class="mark">AH</span>
+          <span>TradingAgents A/H 平台设计</span>
+        </a>
+        <nav class="nav-links" aria-label="页面导航">
+          <a href="../">首页</a>
+          <a href="#architecture">架构</a>
+          <a href="#rules">市场规则</a>
+          <a href="#roadmap">路线图</a>
+          <a href="https://github.com/baokaijian/TradingAgents">GitHub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="hero">
+        <div class="shell hero-grid">
+          <div>
+            <span class="eyebrow">产品化设计说明</span>
+            <h1>A 股与港股自动化交易工具平台</h1>
+            <p class="lead">
+              本页将设计文档转化为可浏览的产品架构说明。平台以 TradingAgents 作为研究决策引擎，
+              外层接入确定性的市场规则、账户风控、订单管理、仿真交易和审计回放能力。
+            </p>
+          </div>
+          <aside class="summary-card">
+            <h2>设计原则</h2>
+            <ul class="summary-list">
+              <li><span class="check">✓</span><span>LLM 只输出研究结论和解释，不直接下单。</span></li>
+              <li><span class="check">✓</span><span>所有订单先经过市场规则和账户风控。</span></li>
+              <li><span class="check">✓</span><span>A 股和港股分市场建模，统一交易抽象。</span></li>
+              <li><span class="check">✓</span><span>先 paper trading，再半自动实盘，最后小额度自动化。</span></li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+
+      <div class="shell layout">
+        <aside class="toc">
+          <strong>目录</strong>
+          <a href="#overview">设计目标</a>
+          <a href="#tradingagents">框架复用</a>
+          <a href="#architecture">总体架构</a>
+          <a href="#rules">A/H 市场规则</a>
+          <a href="#modules">模块设计</a>
+          <a href="#risk">风控与执行</a>
+          <a href="#roadmap">落地路线</a>
+          <a href="#safety">安全边界</a>
+        </aside>
+
+        <div>
+          <section id="overview">
+            <div class="section-head">
+              <h2>设计目标</h2>
+              <p>把多 Agent 研究系统升级为面向 A 股和港股的自动化交易工具平台，但把交易安全边界交给确定性系统。</p>
+            </div>
+            <div class="grid-3">
+              <article class="card metric">
+                <div class="value">研究引擎</div>
+                <h3>TradingAgents</h3>
+                <p>保留分析师、牛熊研究员、交易员、风险经理和组合经理的多 Agent 协作链路。</p>
+              </article>
+              <article class="card metric">
+                <div class="value">交易内核</div>
+                <h3>规则 + 风控 + OMS</h3>
+                <p>将 Agent 输出转为强类型信号，再由规则和风控决定能否生成订单。</p>
+              </article>
+              <article class="card metric">
+                <div class="value">市场适配</div>
+                <h3>A 股 + 港股</h3>
+                <p>处理不同交易时段、手数、涨跌幅、T+1、港股 tick table 和 Stock Connect 约束。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="tradingagents">
+            <div class="section-head">
+              <h2>TradingAgents 如何复用</h2>
+              <p>原框架适合作为研究决策引擎，但不应直接拥有下单权限。</p>
+            </div>
+            <div class="grid-2">
+              <article class="card">
+                <h3>直接复用</h3>
+                <p>LangGraph 编排、分析师角色、辩论机制、结构化输出、多 LLM provider、checkpoint、报告生成和记忆反思。</p>
+              </article>
+              <article class="card">
+                <h3>必须改造</h3>
+                <p>数据源、A/H 专用工具、信号标准化、确定性风控、券商网关、订单生命周期和事件驱动回测。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="architecture">
+            <div class="section-head">
+              <h2>总体架构</h2>
+              <p>平台采用“研究引擎 + 市场适配 + 交易内核”的分层设计。</p>
+            </div>
+            <div class="pipeline">
+              <div class="pipe-step"><span>1</span><strong>数据层</strong><p>行情、财务、公告、新闻、资金流、主数据。</p></div>
+              <div class="pipe-step"><span>2</span><strong>研究引擎</strong><p>TradingAgents 多角色分析与辩论。</p></div>
+              <div class="pipe-step"><span>3</span><strong>信号标准化</strong><p>Markdown 决策转为 SignalIntent。</p></div>
+              <div class="pipe-step"><span>4</span><strong>规则风控</strong><p>市场规则、账户约束和策略阈值。</p></div>
+              <div class="pipe-step"><span>5</span><strong>OMS/EMS</strong><p>订单状态机、切片、撤单和回报。</p></div>
+              <div class="pipe-step"><span>6</span><strong>审计回放</strong><p>保存输入、输出、拒单原因和成交路径。</p></div>
+            </div>
+          </section>
+
+          <section id="rules">
+            <div class="section-head">
+              <h2>A 股与港股市场规则</h2>
+              <p>规则引擎必须确定性实现，不能依赖 LLM 即兴判断。</p>
+            </div>
+            <div class="panel compare">
+              <table>
+                <thead>
+                  <tr>
+                    <th>市场</th>
+                    <th>核心约束</th>
+                    <th>平台处理方式</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>A 股</td>
+                    <td>集合竞价、连续竞价、100 股手数、0.01 元 tick、涨跌幅、T+1 可卖。</td>
+                    <td>按市场和板块建规则表，检查时段、手数、价格、涨跌停、停牌和可卖数量。</td>
+                  </tr>
+                  <tr>
+                    <td>港股</td>
+                    <td>开市前、连续交易、收市竞价、不同每手股数、动态 tick table、VCM/CAS。</td>
+                    <td>按证券主数据加载 board lot 与 tick size，按订单类型检查可接受窗口和价格档位。</td>
+                  </tr>
+                  <tr>
+                    <td>互联互通</td>
+                    <td>标的名单、额度、交易日差异、北向/南向资金和订单窗口。</td>
+                    <td>作为独立 eligibility 层进入市场规则引擎，失败时只给出解释，不生成订单。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="modules">
+            <div class="section-head">
+              <h2>模块设计</h2>
+              <p>当前代码已经先落地 MVP 平台层，后续逐步补齐数据、回测、实盘网关和控制台。</p>
+            </div>
+            <div class="grid-3">
+              <article class="card">
+                <h3>数据中台</h3>
+                <p>主数据、行情、公告、财务、新闻、舆情、宏观和资金流，生产环境应接授权数据源。</p>
+              </article>
+              <article class="card">
+                <h3>Agent 扩展</h3>
+                <p>新增监管、流动性、公司行动、AH 溢价等分析角色，补充 A/H 股专用上下文。</p>
+              </article>
+              <article class="card">
+                <h3>信号服务</h3>
+                <p>把 Buy / Overweight / Hold / Underweight / Sell 转换为可风控的结构化意图。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="risk">
+            <div class="section-head">
+              <h2>风控与执行</h2>
+              <p>LLM 风控辩论提供解释，真正的交易拦截由确定性 RiskEngine 和 MarketRuleEngine 完成。</p>
+            </div>
+            <div class="grid-2">
+              <article class="card">
+                <h3>风控维度</h3>
+                <div class="tag-list">
+                  <span class="tag">最大单笔金额</span>
+                  <span class="tag">最大仓位权重</span>
+                  <span class="tag">最小置信度</span>
+                  <span class="tag">可用现金</span>
+                  <span class="tag">可卖数量</span>
+                  <span class="tag">黑名单</span>
+                  <span class="tag">行情异常熔断</span>
+                </div>
+              </article>
+              <article class="card">
+                <h3>执行方式</h3>
+                <p>先使用 paper broker 验证流程。半自动实盘阶段默认进入人工审批队列，自动实盘只允许白名单策略、白名单账户和小额度。</p>
+              </article>
+            </div>
+          </section>
+
+          <section>
+            <div class="section-head">
+              <h2>核心对象</h2>
+              <p>平台把研究结论转换为稳定的数据结构，降低自由文本进入交易系统的风险。</p>
+            </div>
+            <div class="code-panel">
+              <pre><code>Instrument      # symbol, market, board, currency, lot_size, tick_size_rule
+SignalIntent    # side, conviction, target_weight, entry_price, stop_loss
+OrderIntent     # side, order_type, quantity, limit_price, tif
+ValidationResult# accepted, issues, reject codes
+Order           # status, filled_qty, avg_price, reject_reason</code></pre>
+            </div>
+          </section>
+
+          <section id="roadmap">
+            <div class="section-head">
+              <h2>落地路线</h2>
+              <p>从研究辅助到仿真，再到半自动实盘，最后进入小额度自动化。</p>
+            </div>
+            <div class="roadmap">
+              <div class="phase">
+                <div class="phase-label">阶段一</div>
+                <div><h3>A/H 研究版</h3><p>接入 A/H 证券解析、专用数据工具和中文报告，只输出报告与 SignalIntent。</p></div>
+              </div>
+              <div class="phase">
+                <div class="phase-label">阶段二</div>
+                <div><h3>仿真交易版</h3><p>实现 SignalNormalizer、MarketRuleEngine、RiskEngine、paper broker 和回测撮合。</p></div>
+              </div>
+              <div class="phase">
+                <div class="phase-label">阶段三</div>
+                <div><h3>半自动实盘</h3><p>接入券商网关，但所有订单默认进入人工审批队列。</p></div>
+              </div>
+              <div class="phase">
+                <div class="phase-label">阶段四</div>
+                <div><h3>小额度自动实盘</h3><p>仅对白名单策略、白名单标的和小额度账户开放自动执行。</p></div>
+              </div>
+            </div>
+          </section>
+
+          <section id="safety">
+            <div class="section-head">
+              <h2>安全边界</h2>
+              <p>实盘交易风险来自数据、模型、执行、市场和合规多个方向，默认策略必须保守。</p>
+            </div>
+            <div class="warning danger">
+              <strong>默认不开实盘。</strong>
+              当前平台优先服务 research-only 和 paper-trading。缺少数据授权、券商授权、合规审批、
+              人工确认和完整审计时，不应连接实盘账户自动下单。
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="shell">
+        TradingAgents A/H 自动化交易平台设计 · 源文档保留在
+        <a href="./ah_share_hk_auto_trading_platform_design.md">Markdown 版本</a>
+      </div>
+    </footer>
+  </body>
+</html>
